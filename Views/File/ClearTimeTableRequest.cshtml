@@ -1,0 +1,11 @@
+﻿@{
+	ViewData["Title"] = "Confirm";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3 class="text-muted">Clear all the palnning data</h3>
+<div class="row">
+    <p style="margin-left:16px">All the data will be completely erased. Are you sure?</p>
+</div>
+<a style="display:inline-block" href="@Url.Action("ClearTimeTable", "File")" class="btn btn-danger">Yes</a>
+<a style="display:inline-block" href="@Url.Action("Index", "Room")" class="btn btn-secondary">No</a>

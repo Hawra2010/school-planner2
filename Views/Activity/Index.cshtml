@@ -1,0 +1,135 @@
+﻿@model TimeTable
+
+@{
+    ViewBag.Title = "Activity Editor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var Error = TempData["Error"] as String;
+    var Room = ViewData["Room"] as String;
+    var Day = (DayOfWeek)ViewData["Day"];
+    var Slot = (Int32)ViewData["Slot"];
+
+    var Groups = Model.groups.AsEnumerable();
+    var Classes = Model.classes.AsEnumerable();
+    var Teachers = Model.teachers.AsEnumerable();
+
+    var Mode = default(String);
+    var Activity = Model.GetActivityByRoomSlotAndDay(Room, Slot, Day);
+    if (Activity != null)
+    {
+        Groups = Groups.Where(x => x != Activity.group);
+        Classes = Classes.Where(x => x != Activity.className);
+        Teachers = Teachers.Where(x => x != Activity.teacher);
+
+        Mode = nameof(TimeTablePlanner.Controllers.ActivityController.Update);
+    }
+    else
+    {
+        Mode = nameof(TimeTablePlanner.Controllers.ActivityController.Append);
+    }
+}
+
+<p>
+    @if (Error != null)
+    {
+        <div class="text-danger">@Error</div>
+    }
+</p>
+
+<div>
+    @using (Html.BeginForm(Mode, "Activity"))
+    {
+        <input type="hidden" id="room" name="room" value="@Room" />
+        <input type="hidden" id="slot" name="slot" value="@Slot" />
+        <input type="hidden" id="day" name="day" value="@Day" />
+
+        <fieldset>
+            <legend>Activity</legend>
+            <div class="row">
+                <div class="col-2">
+                    <p>Room:</p>
+                </div>
+                <div class="col-2">
+                    <p>@Room</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <p>Slot:</p>
+                </div>
+                <div class="col-2">
+                    <p>@Model.GetSlotTimeValue(Slot - 1)</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <p>Day:</p>
+                </div>
+                <div class="col-2">
+                    <p>@Day</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <p>Group:</p>
+                </div>
+                <div class="col-2">
+                    <select id="group" name="group">
+                        @if (Activity != null)
+                        {
+                            <option value="@Activity.group">@Activity.group</option>
+                        }
+                        @foreach (var value in Groups)
+                        {
+                            <option value="@value">@value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <p>Class:</p>
+                </div>
+                <div class="col-2">
+                    <select id="class" name="class">
+                        @if (Activity != null)
+                        {
+                            <option value="@Activity.className">@Activity.className</option>
+                        }
+                        @foreach (var value in Classes)
+                        {
+                            <option value="@value">@value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-2">
+                    <p>Teacher:</p>
+                </div>
+                <div class="col-2">
+                    <select id="teacher" name="teacher">
+                        @if (Activity != null)
+                        {
+                            <option value="@Activity.teacher">@Activity.teacher</option>
+                        }
+                        @foreach (var value in Teachers)
+                        {
+                            <option value="@value">@value</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            
+        </fieldset>
+
+        <div class="row">
+            <input type="submit" name="@Mode" action="post" value="@Mode" style="margin-left:12px" class="btn btn-primary" />
+            <a href="@Url.Action(nameof(TimeTablePlanner.Controllers.RoomController.Index), "Room", new { room = Room })" style="margin-left:10px" class="btn btn-secondary">Cancel</a>
+            @if (Mode == nameof(TimeTablePlanner.Controllers.ActivityController.Update))
+            {
+                <a href="@Url.Action(nameof(TimeTablePlanner.Controllers.ActivityController.Remove), "Activity", new { room = Room, slot = Slot, day = Day })" style="margin-left:10px" class="btn btn-danger">Remove</a>
+            }
+        </div>
+    }
+</div>

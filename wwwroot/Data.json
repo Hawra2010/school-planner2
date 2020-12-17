@@ -1,0 +1,34 @@
+{
+    "Rooms": [
+      "11",
+      "157",
+      "158",
+      "160",
+      "15-A",
+      "15-B"
+    ],
+    "Groups": [
+      "1A",
+      "1B",
+      "2A",
+      "2B"
+    ],
+    "Classes": [
+      "EGUI",
+      "EADS",
+      "EOOP",
+      "EPRST",
+      "ECOAR",
+      "ESOEN",
+      "ELAN1",
+      "ELAN2",
+      "EOPSYS"
+    ],
+    "Teachers": [
+      "John Doe",
+      "Jane Doe",
+      "Evil Jones",
+      "Stahu Jonas"
+    ],
+    "Activities": []
+  }

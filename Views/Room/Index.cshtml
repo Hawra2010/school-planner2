@@ -1,0 +1,92 @@
+﻿@model TimeTable
+
+@{
+    ViewBag.Title = "Room";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var Error = TempData["Error"];
+    var ActiveRoom = ViewData["ActiveRoom"] as String;
+    var OtherRooms = Model.rooms.Where(x => x != ActiveRoom);
+    var Activities = Model.GetActivitiesByRoom(ActiveRoom);
+}
+
+<h2 class="text-muted">Activities By Room</h2>
+
+<script type="text/javascript">
+	function changeRoom(value) {
+		var link = "@Url.Action("Index", "Room", new { room = ActiveRoom })";
+		link = link.replace("@ActiveRoom", value);
+		window.location.href = link;
+	}
+</script>
+
+<style>
+	td, th {
+		text-align:center;
+	}
+</style>
+
+<p>
+	@if (Error != null)
+	{
+		<div class="text-danger">@Error</div>
+	}
+</p>
+
+<label for="select-room">Room: </label>
+<select id="select-room" style="width:100px" onchange="changeRoom(this.value)">
+	<option value="@ActiveRoom">@ActiveRoom</option>
+	@foreach (var room in OtherRooms)
+	{
+		<option value="@room">@room</option>
+	}
+</select>
+
+<table class="table table-striped table-bordered">
+	<tr>
+		<th></th>
+		@foreach (var day in Model.validDays)
+        {
+			<th>@day.ToString()</th>
+		}
+	</tr>
+
+	@for (var i = 0; i < Model.slots; ++i)
+    {
+		<tr>
+			<th>
+				@Model.GetSlotTimeValue(i)
+			</th>
+
+			@foreach (var day in Model.validDays)
+            {
+                var activitiesDay = Activities.Where(x => x.slot == i + 1 && x.day == day);
+                var activity = activitiesDay.FirstOrDefault();
+                var count = activitiesDay.Count();
+
+                switch (count)
+                {
+                    case 0:
+						<td>
+							<a href="@Url.Action("Index", "Activity", new { day, slot = i + 1, room = ActiveRoom })" style="width:150px" class="btn btn-light"></a>
+						</td>
+						break;
+					case 1:
+						<td>
+							<a href="@Url.Action("Index", "Activity", new { day, slot = i + 1, room = ActiveRoom })" style="width:150px" class="btn btn-primary">Group: @activity.group Class: @activity.className Teacher: @activity.teacher</a>
+						</td>
+						break;
+					default:
+						<td>
+							<button class="btn btn-danger">
+								Error
+							</button>
+						</td>
+						break;
+				}
+			}
+		</tr>
+		
+	}
+
+</table>

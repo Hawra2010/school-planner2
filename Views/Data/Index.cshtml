@@ -1,0 +1,45 @@
+﻿@model TimeTable.DataTable
+
+@{
+    ViewBag.Title = $"{Model.name} Editor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var Error = TempData["Error"];
+}
+
+<h3 class="text-muted">@Model.name</h3>
+
+<table class="table table-striped table-bordered">
+	<tr>
+		<th>
+			Value
+		</th>
+		<th>Action</th>
+	</tr>
+
+	@foreach (var item in Model)
+	{
+		<tr>
+			<td>
+				@Html.DisplayFor(x => item)
+			</td>
+			<td>
+				@Html.ActionLink("Remove", "Remove", new { table = Model.name, item = item })
+			</td>
+		</tr>
+	}
+
+</table>
+<p>
+    @if (Error != null)
+    {
+        <div class="text-danger">@Error</div>
+    }
+
+    @using (Html.BeginForm("Append", "Data"))
+    {
+        <input type="text" name="item" value="" />
+        <input type="hidden" name="table" value="@Model.name" />
+        <input type="submit" name="append" action="post" value="Insert" />
+    }
+</p>

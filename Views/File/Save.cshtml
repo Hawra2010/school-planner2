@@ -1,0 +1,53 @@
+﻿@model TimeTable;
+
+@{
+	ViewData["Title"] = "Data Export";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3 class="text-muted">Save Data</h3>
+
+<script>
+    function copyToClipboard() {
+        var textArea = document.createElement("textarea");
+        textArea.value = document.getElementById('json-data').innerHTML;
+        textArea.style.position = "fixed";  //avoid scrolling to bottom
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            var successful = document.execCommand('copy');
+            if (successful) {
+                alert("Data copied.");
+            }
+            else {
+                alert("Unable to copy data");
+            }
+        } catch (err) {
+            alert("Unable to copy data");
+        }
+        document.body.removeChild(textArea);
+    }
+
+	function download(content, fileName, contentType) {
+		var a = document.createElement("a");
+		var file = new Blob([content], { type: contentType });
+		a.href = URL.createObjectURL(file);
+		a.download = fileName;
+        a.click();
+        alert("File downloaded.");
+	}
+
+	function saveJson() {
+		var element = document.getElementById('json-data')
+		download(element.innerHTML, 'data.json', 'text/plain')
+	}
+</script>
+
+<div class="table">
+    <textarea style="display:none" id="json-data" name="json-data" cols="32" rows="16">@Html.Raw(ViewBag.JsonData)</textarea>
+    <p class="text-muted">To use the save as functionality, enable the ask for location before download in the browser<p>
+    <button onclick="saveJson()" class="btn btn-primary">Download data.json</button>
+    <button onclick="copyToClipboard()" id="btncopytoclipboard" class="btn btn-success">Copy To Clipboard</button>
+</div>
